@@ -1,0 +1,63 @@
+Sub newstock()
+Dim ws As Worksheet
+Dim starting_ws As Worksheet
+Set starting_ws = ActiveSheet 'remember which worksheet is active in the beginning
+
+For Each ws In ThisWorkbook.Worksheets
+    ws.Activate
+ 
+'Defining Rows and Columns for esay recognition in my loops
+
+    Dim ticker As String
+    Dim volume_traded As Single
+    volume_traded = 0
+    Dim r As Long
+'Finding the last row of the data
+    Dim lastrow As Long
+    lastrow = Cells(Rows.Count, 1).End(xlUp).Row
+
+'creating a storage space for the collected data
+    Dim summary_row As Integer
+    summary_row = 2
+
+'renaming all of the data
+    Dim year_open As Double
+    Dim year_close As Double
+    Dim year_change As Double
+    Dim percent_change As Double
+    year_open = 0
+    year_close = 0
+    year_change = 0
+    percent_change = 0
+    For r = 2 To lastrow
+
+        If Cells(r + 1, 1).Value <> Cells(r, 1).Value Then
+            
+            ticker = Cells(r, 1).Value
+            year_open = Cells(r - 261, 3).Value
+            Range("I" & summary_row).Value = ticker
+            year_close = Cells(r, 6).Value
+            year_change = year_close - year_open
+            percent_change = year_change / year_open
+            Range("J" & summary_row).Value = year_change
+            Range("K" & summary_row).Value = percent_change
+            Range("L" & summary_row).Value = volume_traded
+            
+            year_open = 0
+            year_close = 0
+            year_change = 0
+            percent_change = 0
+            volume_traded = 0
+        summary_row = summary_row + 1
+            
+        Else
+            volume_traded = volume_traded + Cells(r, 7).Value
+        End If
+        year_open = 0
+    Next r
+    ws.Cells(1, 1) = 1 'this sets cell A1 of each sheet to "1"
+Next ws
+
+starting_ws.Activate 'activate the worksheet that was originally active
+ 
+End Sub
